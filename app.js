@@ -1,7 +1,7 @@
 import express from "express"
 import connectDB from "./config/config.js"
 
-import UserRouter from "./routes/user.js";
+import UserRouter from "./routes/userRoute.js";
 
 const app = express();
 

@@ -1,4 +1,4 @@
-import UserService from "../services/user.js";
+import UserService from "../services/userService.js";
 
 class UserController {
     static async login(req, res) {
