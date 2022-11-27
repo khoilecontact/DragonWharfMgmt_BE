@@ -1,11 +1,18 @@
 import mongoose from "mongoose"
 import argon2 from "argon2"
+import jwt from "jsonwebtoken"
+
+var validateEmail = function(email) {
+    var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    return re.test(email)
+};
 
 const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: [true, "User email is required"],
-        unique: [true, "Email is already in use"]
+        unique: [true, "Email is already in use"],
+        validate: [validateEmail, "Invalid email"]
     },
     password: {
         type: String,
@@ -13,6 +20,7 @@ const userSchema = new mongoose.Schema({
     },
     name: {
         type: String,
+        required: [true, "Name is required"]
     },
     phone: {
         type: String,
@@ -31,6 +39,22 @@ userSchema.pre("save", async function (next) {
 
 userSchema.methods.matchPassword = async function (password) {
     return await argon2.verify(this.password, password)
+}
+
+userSchema.methods.getSignedToken = function () {
+    return jwt.sign({ id: this._id }, process.env.SECRET_TOKEN, {
+      expiresIn: process.env.EXPIRE_TOKEN,
+    });
+};
+
+userSchema.methods.getRefreshToken = function () {
+    return jwt.sign({ id: this._id }, process.env.SECRET_TOKEN_REFRESH, {
+      expiresIn: process.env.EXPIRE_REFRESH_TOKEN,
+    });
+};
+
+userSchema.methods.verifyRefreshToken = function (refreshToken) {
+    return jwt.verify(refreshToken, process.env.SECRET_TOKEN_REFRESH);
 }
 
 const User = mongoose.model("User", userSchema)
