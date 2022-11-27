@@ -12,7 +12,7 @@ function connectDB() {
         if(err) {
             console.log(err);
         } else {
-            console.log("Connect to database successfully!");
+            console.log("Connecting to database successfully!");
         }
     })
 }
