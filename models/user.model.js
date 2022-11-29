@@ -1,18 +1,14 @@
 import mongoose from "mongoose"
 import argon2 from "argon2"
 import jwt from "jsonwebtoken"
-
-var validateEmail = function(email) {
-    var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    return re.test(email)
-};
+import ValidateHepler from "../helpers/validate.helper.js";
 
 const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: [true, "User email is required"],
         unique: [true, "Email is already in use"],
-        validate: [validateEmail, "Invalid email"]
+        validate: [ValidateHepler.validateEmail, "Invalid email"]
     },
     password: {
         type: String,
