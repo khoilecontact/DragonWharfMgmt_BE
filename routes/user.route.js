@@ -6,8 +6,11 @@ const UserRouter = express.Router()
 
 UserRouter.post("/register", UserController.register)
 UserRouter.post("/login", UserController.login)
-UserRouter.get("/", AuthMiddleware.requireUser, UserController.getUserInfo)
-UserRouter.post("/", AuthMiddleware.requireUser, UserController.updateUserInfo)
+UserRouter.route("/")
+    .get(AuthMiddleware.requireUser, UserController.getUserInfo)
+    .post(AuthMiddleware.requireUser, UserController.updateUserInfo)
 UserRouter.post("/refresh-token", UserController.refreshToken)
+UserRouter.get("/list", AuthMiddleware.requireAdmin, UserController.getUserList)
+UserRouter.get("/profile/:id", AuthMiddleware.requireAdmin, UserController.getUserById)
 
 export default UserRouter;
