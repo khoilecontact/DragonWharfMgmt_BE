@@ -1,9 +1,11 @@
 import mongoose from "mongoose"
+import ValidateHepler from "../helpers/validate.helper.js";
 
 const reportSchema = mongoose.Schema({
     email: {
         type: String,
-        required: [true, "Sender's email is required"]
+        required: [true, "Sender's email is required"],
+        validate: [ValidateHepler.validateEmail, "Invalid email"]
     },
     type: {
         type: String,
@@ -17,7 +19,7 @@ const reportSchema = mongoose.Schema({
     rating: {
         type: Number
     }
-})
+}, { timestamps: true })
 
 const Report = mongoose.model("Report", reportSchema)
 export default Report;
