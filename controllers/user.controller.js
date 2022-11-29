@@ -50,6 +50,11 @@ class UserController {
             }
 
         } catch (e) {
+            if (e.code == 11000) return res.status(400).json({
+                success: false,
+                message: "Email đã tồn tại. Vui lòng sử dụng email khác.",
+                data: null
+            })
             console.log(e.stack);
             return res.status(500).json({
                 success: false,
@@ -123,7 +128,46 @@ class UserController {
                 data: null
             })
         }
+    }
 
+    // Admin only
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
+    static async getUserList(req, res) {
+        try {
+            
+            const result = await UserService.getUserList();
+    
+            if (result.success) return res.json(result)
+            else return res.status(400).json(result)
+        } catch(e) {
+            console.log(e.stack)
+            return res.status(500).json({
+                success: false,
+                message: "Đã có lỗi xảy ra. Vui lòng thử lại sau.",
+                data: null
+            })
+        }
+    }
+
+    static async getUserById(req, res) {
+        try {
+            const { id } = req.params;
+
+            if (!id) return res.status(400).status("Vui lòng cung cấp id người dùng.")
+
+            const result = await UserService.getUserById(id)
+            
+            if (result.success) return res.json(result)
+            else return res.status(400).json(result)
+        } catch(e) {
+            console.log(e.stack)
+            return res.status(500).json({
+                success: false,
+                message: "Đã có lỗi xảy ra. Vui lòng thử lại sau.",
+                data: null
+            })
+        }
     }
 }
 

@@ -36,15 +36,6 @@ class UserService {
     static async register(userData) {
         const { email, password, name, phone, dob } = userData;
 
-        const checkEmailExist = await User.exists({ email });
-        if (checkEmailExist) {
-            return {
-                success: false,
-                message: "Email đã được đăng ký. Vui lòng sử dụng email khác.",
-                data: null
-            }
-        }
-
         const user = await User.create({ email, password, name, phone, dob });
 
         return {
@@ -139,6 +130,44 @@ class UserService {
                 data: null
             } 
             else throw e
+        }
+    }
+
+    // Admin only
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
+    static async getUserList() {
+        const users = await User.find().select("-password -__v")
+
+        return {
+            success: true,
+            message: "Lấy danh sách người dùng thành công!",
+            data: users
+        }
+    }
+
+    static async getUserById(userId) {
+        try {
+            const user = await User.findById(userId).select("-password -__v")
+    
+            if (!user) return {
+                success: false,
+                message: "Không tìm thấy người dùng.",
+                data: null
+            }
+    
+            return {
+                success: true,
+                message: "Lấy dữ liệu người dùng thành công!",
+                data: user
+            }
+        } catch(e) {
+            if (e instanceof mongoose.CastError) return {
+                success: false,
+                message: "ID không hợp lệ.",
+                data: null
+            }
+            throw e
         }
     }
 }
