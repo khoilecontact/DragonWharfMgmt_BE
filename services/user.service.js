@@ -1,4 +1,5 @@
 import User from "../models/user.model.js"
+import JWTHelper from "../helpers/jwt.helper.js";
 import mongoose from "mongoose"
 
 class UserService {
@@ -22,8 +23,8 @@ class UserService {
         let payload = user.toJSON()
         delete payload.password
 
-        const accessToken = await user.getSignedToken()
-        const refreshToken =  await user.getRefreshToken()
+        const accessToken = JWTHelper.getAccessToken(user._id)
+        const refreshToken =  JWTHelper.getRefreshToken(user._id)
 
         return {
             success: true,
@@ -116,6 +117,28 @@ class UserService {
                     data: null
                 }
             } else throw e
+        }
+    }
+
+    static async refreshToken(token) {
+        try {
+            const userId = await JWTHelper.verifyRefreshToken(token);
+
+            const accessToken = JWTHelper.getAccessToken(userId)
+            const refreshToken =  JWTHelper.getRefreshToken(userId)
+
+            return {
+                success: true,
+                message: "Đã làm mới token.",
+                data: { accessToken, refreshToken }
+            }
+        } catch(e) {
+            if (e instanceof JWTHelper.JsonWebTokenError) return {
+                success: false,
+                message: "Refresh token không hợp lệ hoặc đã hết hạn.",
+                data: null
+            } 
+            else throw e
         }
     }
 }

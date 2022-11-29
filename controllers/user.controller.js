@@ -100,6 +100,31 @@ class UserController {
             })
         }
     }
+
+    static async refreshToken(req, res) {
+        try {
+            const { refreshToken } = req.body;
+            if (!refreshToken) {
+                return res.status(400).json({
+                    success: "false",
+                    messeage: "Vui lòng cung cấp token.",
+                    data: null
+                })
+            }
+            const result = await UserService.refreshToken(refreshToken)
+            if (result.success) {
+                return res.json(result)
+            } else return res.status(400).json(result)
+        } catch(e) {
+            console.log(e.stack);
+            return res.status(500).json({
+                success: false,
+                message: "Đã có lỗi xảy ra. Vui lòng thử lại sau.",
+                data: null
+            })
+        }
+
+    }
 }
 
 export default UserController;

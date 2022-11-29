@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken"
+import JWTHelper from "../helpers/jwt.helper.js";
 
 class AuthMiddleware {
     static async requireUser(req, res, next) {
@@ -14,11 +14,11 @@ class AuthMiddleware {
         var decodedToken = null;
         try {
 
-            decodedToken = jwt.verify(token, process.env.SECRET_TOKEN);
+            decodedToken = await JWTHelper.verifyAccessToken(token, process.env.SECRET_TOKEN);
             if (decodedToken == null) {
                 return res.status(401).json({
                     success: false,
-                    message: "Authorize Failed",
+                    message: "Xác thực thất bại.",
                     data: null
                 })
             }
@@ -26,11 +26,17 @@ class AuthMiddleware {
             req.userId = decodedToken.id
             next();
         } catch (error) {
-            //console.log(error)
-            return res.status(401).json({
+            if (error instanceof JWTHelper.JsonWebTokenError) {                
+                return res.status(401).json({
+                    success: false,
+                    message: "Token không hợp lệ hoặc đã hết hạn.",
+                    data: null
+                })
+            }
+            console.log(error.stack)
+            return res.status(500).json({
                 success: false,
-                message: error.message,
-                data: null
+                message: "Đã có lỗi xảy ra. Vui lòng thử lại sau."
             })
         }
     }

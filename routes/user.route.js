@@ -8,5 +8,6 @@ UserRouter.post("/register", UserController.register)
 UserRouter.post("/login", UserController.login)
 UserRouter.get("/", AuthMiddleware.requireUser, UserController.getUserInfo)
 UserRouter.post("/", AuthMiddleware.requireUser, UserController.updateUserInfo)
+UserRouter.post("/refresh-token", UserController.refreshToken)
 
 export default UserRouter;
