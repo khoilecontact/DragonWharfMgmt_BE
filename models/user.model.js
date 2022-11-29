@@ -37,21 +37,5 @@ userSchema.methods.matchPassword = async function (password) {
     return await argon2.verify(this.password, password)
 }
 
-userSchema.methods.getSignedToken = function () {
-    return jwt.sign({ id: this._id }, process.env.SECRET_TOKEN, {
-      expiresIn: process.env.EXPIRE_TOKEN,
-    });
-};
-
-userSchema.methods.getRefreshToken = function () {
-    return jwt.sign({ id: this._id }, process.env.SECRET_TOKEN_REFRESH, {
-      expiresIn: process.env.EXPIRE_REFRESH_TOKEN,
-    });
-};
-
-userSchema.methods.verifyRefreshToken = function (refreshToken) {
-    return jwt.verify(refreshToken, process.env.SECRET_TOKEN_REFRESH);
-}
-
 const User = mongoose.model("User", userSchema)
 export default User;
